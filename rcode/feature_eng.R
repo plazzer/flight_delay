@@ -1,5 +1,6 @@
 # Michael Plazzer, Ignite Date Solutions. March 2017
-# This self contained R code demonstrates feature engineering, using the well known airline delay data set.
+# This self contained R code demonstrates feature engineering, using the well known airline delay data set. It is written
+#   in base-r so anybody can run it! (except for the modelling bit)
 # R version 3.3.2 
 set.seed(201703) 
 require("h2o")

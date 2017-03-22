@@ -68,4 +68,17 @@ fn_model(df_airline) # MSE:  517.1347 RMSE:  22.7406 MAE:  12.46563 # no change
 df_airline$cnt_day_arr_diff<-df_airline$med_day_arr-df_airline$cnt_day_arr
 fn_model(df_airline) # MSE:  505.3978 RMSE:  22.48105 MAE:  12.35899
 
+# days until holiday feature - originally from Hortonworks
+holidays<-c(as.Date("1987-10-12"),as.Date("1987-11-11"),as.Date("1987-11-26"),as.Date("1987-12-25"))
+fn_holiday<-function(df_airline_Date,holidays)
+{
+  closest<-as.numeric(min(abs(df_airline_Date-holidays)))
+  return(closest)
+}
+holiday_key<-data.frame(Date=unique(df_airline$Date),days2holiday=sapply(unique(df_airline$Date),fn_holiday,holidays)) #maybe quicker to apply for each unqiue date, then join back
+holiday_key
+df_airline<-merge(df_airline,holiday_key);rm(holiday_key)
+                               
+fn_model(df_airline)
+# MSE:  506.2752  RMSE:  22.50056 MAE:  12.36566
 h2o.shutdown(prompt = FALSE)

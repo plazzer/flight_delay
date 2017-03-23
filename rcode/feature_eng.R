@@ -4,7 +4,7 @@
 # R version 3.3.2 
 set.seed(201703) 
 require("h2o")
-download.file("http://stat-computing.org/dataexpo/2009/1987.csv.bz2","./1987.csv.bz2") 
+#download.file("http://stat-computing.org/dataexpo/2009/1987.csv.bz2","./1987.csv.bz2") 
 df_airline<-read.csv("./1987.csv.bz2")#,stringsAsFactors = FALSE) #re-evaluate stingsAsfactors later, since I create factors below
 #
 # I'll first make a function to call h2o gradient boosting machine; you can run this code whenever you want to run the model
@@ -26,7 +26,9 @@ fn_model(df_airline) #MSE:  562.3008 RMSE:  23.71288 MAE:  12.811
 
 # straight conversion the following to characters, a month is not a number!
 df_airline$DayofMonth<-as.factor(df_airline$DayofMonth)
+fn_model(df_airline) # MSE:  532.2477 RMSE:  23.07049 MAE:  12.59049
 df_airline$DayOfWeek<-as.factor(df_airline$DayOfWeek)
+fn_model(df_airline) RMSE:  # MSE:  533.4763  RMSE:  23.09711 MAE:  12.60946
 df_airline$Month<-as.factor(df_airline$Month)
 fn_model(df_airline) # MSE:  533.3054 RMSE:  23.09341 MAE:  12.60518
 
@@ -43,7 +45,7 @@ df_airline<-merge(agg_late_monthly_ori,df_airline);rm(agg_late_monthly_ori)
 fn_model(df_airline)
 #MSE:  532.1113 RMSE:  23.06754 MAE:  12.58387
 
-# difference on median count dep per airport per day; presumable an airport knows how many flights are departing in advance?
+# difference on median count dep per airport per day; presumably an airport knows how many flights are departing in advance?
 df_airline$Date<-as.Date(paste(df_airline$Year,df_airline$Month,df_airline$DayofMonth,sep="/"))
 agg_count_dep_date<-aggregate(df_airline$Distance,by=list(df_airline$Origin,df_airline$Date),FUN=length)
 agg_med_dep_date<-aggregate(agg_count_dep_date$x,by=list(agg_count_dep_date$Group.1),FUN=median)
@@ -56,7 +58,7 @@ fn_model(df_airline) # MSE:  526.7915 RMSE:  22.95194  MAE:  12.53809 # no chang
 df_airline$cnt_day_dep_diff<-df_airline$med_day_dep-df_airline$cnt_day_dep
 fn_model(df_airline) # MSE:  520.2243 RMSE:  22.80843 MAE:  12.48434
 
-# difference on median count arrivals per airport per day; presumable an airport knows how many flights are arriving in advance?
+# difference on median count arrivals per airport per day; presumably an airport knows how many flights are arriving in advance?
 agg_count_arr_date<-aggregate(df_airline$Distance,by=list(df_airline$Dest,df_airline$Date),FUN=length)
 agg_med_arr_date<-aggregate(agg_count_arr_date$x,by=list(agg_count_arr_date$Group.1),FUN=median)
 names(agg_count_arr_date)<-c("Dest","Date","cnt_day_arr")
@@ -81,4 +83,5 @@ df_airline<-merge(df_airline,holiday_key);rm(holiday_key)
                                
 fn_model(df_airline)
 # MSE:  506.2752  RMSE:  22.50056 MAE:  12.36566
+
 h2o.shutdown(prompt = FALSE)
